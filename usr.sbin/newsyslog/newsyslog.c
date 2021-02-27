@@ -534,7 +534,13 @@ do_entry(struct conf_entry * ent)
 		if (ent->flags & CE_TRIMAT && !force && !rotatereq &&
 		    !oversized) {
 			diffsecs = ptimeget_diff(timenow, ent->trim_at);
-			if (diffsecs < 0.0) {
+			if (ent->fsize == 0) {
+				/* Don't touch 0-sized files. */
+				if (verbose) {
+					printf("0-sized --> skipping\n");
+				}
+				return (free_or_keep);
+			} else if (diffsecs < 0.0) {
 				/* trim_at is some time in the future. */
 				if (verbose) {
 					ptime_adjust4dst(ent->trim_at,
