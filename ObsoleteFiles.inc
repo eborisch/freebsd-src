@@ -51,6 +51,10 @@
 #   xargs -n1 | sort | uniq -d;
 # done
 
+# 20260202: Made libkrb5profile INTERNALLIB
+OLD_LIBS+=usr/lib/libkrb5profile.so.122
+OLD_FILES+=usr/lib/libkrb5profile.so
+
 # 20251218: Remove old MLINK to apmconf(8)
 OLD_FILES+=usr/share/man/man8/apmconf.8.gz
 
