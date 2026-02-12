@@ -1201,6 +1201,7 @@ pf_handle_get_status(struct nlmsghdr *hdr, struct nl_pstate *npt)
 	char *pf_fcounter[FCNT_MAX+1] = FCNT_NAMES;
 	time_t since;
 	int error;
+	uint64_t pc_buffer[2][2][2];
 
 	PF_RULES_RLOCK_TRACKER;
 
@@ -1237,7 +1238,14 @@ pf_handle_get_status(struct nlmsghdr *hdr, struct nl_pstate *npt)
 
 	pfi_update_status(V_pf_status.ifname, &s);
 	nlattr_add_u64_array(nw, PF_GS_BCOUNTERS, 2 * 2, (uint64_t *)s.bcounters);
-	nlattr_add_u64_array(nw, PF_GS_PCOUNTERS, 2 * 2 * 2, (uint64_t *)s.pcounters);
+
+	/* extract [2][2][2] from s.counters[2][2][3]. */
+	for (int i = 0; i < 2; i++)
+		for (int j = 0; j < 2; j++)
+			for (int k = 0; k < 2; k++) {
+				pc_buffer[i][j][k] = s.pcounters[i][j][k];
+	}
+	nlattr_add_u64_array(nw, PF_GS_PCOUNTERS, 2 * 2 * 2, (uint64_t *)pc_buffer);
 
 	nlattr_add(nw, PF_GS_CHKSUM, PF_MD5_DIGEST_LENGTH, V_pf_status.pf_chksum);
 
